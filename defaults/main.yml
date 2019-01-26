@@ -1,0 +1,7 @@
+---
+# defaults file for haproxy
+
+haproxy_user: haproxy
+haproxy_group: haproxy
+global_maxconn: 8192
+haproxy_balance_method: roundrobin

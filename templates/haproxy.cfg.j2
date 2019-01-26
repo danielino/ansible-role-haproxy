@@ -1,0 +1,56 @@
+global
+    log 127.0.0.1 local2
+    pidfile /var/run/haproxy.pid
+{% if global_maxconn %}
+    maxconn {{ global_maxconn }}
+{% else %}
+    maxconn 8192
+{% endif %}
+    user {{ haproxy_user }}
+    group {{ haproxy_group }}
+    daemon
+{% if stat_sock_file is defined %}
+    stats socket {{ stat_sock_file }}
+{% else %}
+    stats socket /var/lib/haproxy/stats
+{% endif %}
+
+defaults
+    log global
+    mode tcp
+{% if default_maxconn  is defined %}
+    maxconn {{ default_maxconn }}
+{% elif global_maxconn is defined %}
+    maxconn {{ global_maxconn }}
+{% else %}
+    maxconn 8192
+{% endif %}
+{% if timeout_connect is defined %}
+    timeout connect {{ timeout_connect }}
+{% else %}
+    timeout connect 10s
+{% endif %}
+{% if timeout_client is defined %}
+    timeout client {{ timeout_client }}
+{% else %}
+    timeout client 1m
+{% endif %}
+{% if timeout_server is defined %}
+    timeout server {{ timeout_server }}
+{% else %}
+    timeout server 1m
+{% endif %}
+
+{% if haproxy_services is defined %}
+{% for service in haproxy_services %}
+frontend fe_{{ service.name }}
+    bind {{ service.listen }}
+    mode {{ service.mode }}
+    default_backend be_{{ service.name }}
+
+backend be_{{ service.name }}
+{% for server in service.servers %}
+    server {{ server.name }} {{ server.ip }} check
+{% endfor %}
+{% endfor %}
+{% endif %}

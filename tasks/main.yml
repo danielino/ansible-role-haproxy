@@ -1,0 +1,20 @@
+---
+# tasks file for haproxy
+- name: check if haproxy is already installed
+  command: rpm -q haproxy
+  register: package
+  changed_when: false
+  failed_when: false
+
+- name: "install haproxy"
+  when: "package is defined and package.rc != 0"
+  block:
+    - name: install haproxy
+      yum: name=haproxy state=latest
+
+    - name: "copy configuration file"
+      template:
+        src: templates/haproxy.cfg.j2
+        dest: /etc/haproxy/haproxy.cfg
+        validate: "haproxy -c -f %s"
+      notify: "restart haproxy"
