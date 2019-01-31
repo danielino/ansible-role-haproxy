@@ -1,13 +1,16 @@
 galaxy_info:
   author: Daniele Marcocci <daniele.marcocci@par-tec.it>
+  role_name: haproxy
+  description: Role to manage haproxy installation and balancer pool
   company: Par-Tec
-  license: license (GPLv2, CC-BY, etc)
-  min_ansible_version: 2.7
+  license: GPLv2
+  min_ansible_version: 2.6
   platforms:
     - name: EL
       versions:
         - 6
         - 7
-  galaxy_tags: []
+  galaxy_tags:
+    - haproxy
 
 dependencies: []
